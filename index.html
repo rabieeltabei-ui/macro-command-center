@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>17-Signal Macro Command Center</title>
+  <style>
+    :root {
+      --bg-main: #0b1120; --bg-card: #131c31; --bg-input: #0f172a; --border: #263554;
+      --text-primary: #f1f5f9; --text-secondary: #94a3b8; --accent: #38bdf8;
+      --green: #10b981; --green-bg: rgba(16,185,129,0.15);
+      --amber: #f59e0b; --amber-bg: rgba(245,158,11,0.15);
+      --red: #ef4444; --red-bg: rgba(239,68,68,0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: var(--bg-main); color: var(--text-primary); line-height: 1.5; padding-bottom: 50px; }
+    .topbar { background: #0f172a; border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+    .brand h1 { font-size: 1.05rem; font-weight: 700; }
+    .badge-tag { background: rgba(56,189,248,0.15); color: var(--accent); padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; }
+    button.primary { background: var(--accent); color: #0b1120; border-color: var(--accent); }
+    .container { max-width: 1300px; margin: 0 auto; padding: 16px; }
+    .hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 18px; }
+    @media (max-width: 800px) { .hero-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .regime-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+    .regime-headline { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .regime-desc { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 12px; }
+    .gate-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill { padding: 4px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 600; }
+    .pill.green { background: var(--green-bg); color: var(--green); }
+    .pill.amber { background: var(--amber-bg); color: var(--amber); }
+    .pill.red { background: var(--red-bg); color: var(--red); }
+    .score-box { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+    .score-circle { width: 90px; height: 90px; border-radius: 50%; border: 5px solid var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 8px; }
+    .score-num { font-size: 1.5rem; font-weight: 800; }
+    .score-sub { font-size: 0.65rem; color: var(--text-secondary); }
+    .playbook-section { margin-bottom: 20px; }
+    .role-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .role-tab.active { background: rgba(56,189,248,0.15); color: var(--accent); border-color: var(--accent); }
+    .playbook-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+    .action-item { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+    .action-item h4 { font-size: 0.88rem; color: var(--accent); margin-bottom: 4px; }
+    .action-item p { font-size: 0.82rem; color: var(--text-secondary); }
+    .layers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 1000px) { .layers-grid { grid-template-columns: 1fr; } }
+    .layer-header { padding: 10px 14px; background: #162038; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
+    .layer-header h2 { font-size: 0.95rem; }
+    .layer-header p { font-size: 0.76rem; color: var(--text-secondary); }
+    .signal-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .sig-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; margin-bottom: 6px; }
+    .sig-name { font-size: 0.86rem; font-weight: 700; }
+    .sig-num { color: var(--accent); }
+    .status-badge { padding: 2px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700; }
+    .status-green { background: var(--green-bg); color: var(--green); }
+    .status-amber { background: var(--amber-bg); color: var(--amber); }
+    .status-red { background: var(--red-bg); color: var(--red); }
+    .sig-input-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .sig-input-row input, .sig-input-row select { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); padding: 5px 8px; border-radius: 6px; font-size: 0.84rem; width: 120px; }
+    .sig-unit, .sig-rule { font-size: 0.76rem; color: var(--text-secondary); }
+    .sig-source a { font-size: 0.72rem; color: var(--accent); text-decoration: none; }
+    .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; max-width: 600px; width: 100%; padding: 18px; }
+    .modal textarea { width: 100%; height: 150px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); border-radius: 8px; padding: 10px; font-family: monospace; font-size: 0.8rem; margin: 10px 0; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .toast { position: fixed; bottom: 16px; right: 16px; background: var(--green); color: #0b1120; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.82rem; display: none; z-index: 300; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1 id="ui-title">17-Signal Macro Command Center</h1>
+      <span class="badge-tag" id="ui-subtitle">Global + MENA / Egypt</span>
+    </div>
+    <div class="controls">
+      <button class="primary" onclick="copyUpdatePrompt()" id="btn-copy-prompt">1. Copy AI Prompt</button>
+      <button onclick="openJsonModal()" id="btn-paste-json">2. Paste AI JSON</button>
+      <button onclick="resetDefaults()" id="btn-reset">Reset</button>
+      <button onclick="toggleLang()" id="btn-lang">عربي</button>
+    </div>
+  </header>
+  <main class="container">
+    <section class="hero-grid">
+      <div class="card">
+        <div class="regime-title" id="lbl-regime-title">SYSTEMIC REGIME DIAGNOSIS (4-GATE ENGINE)</div>
+        <div class="regime-headline" id="regime-headline">Loading...</div>
+        <div class="regime-desc" id="regime-desc"></div>
+        <div class="gate-pills" id="gate-pills"></div>
+      </div>
+      <div class="card score-box">
+        <div class="score-circle" id="score-circle">
+          <span class="score-num" id="score-num">--</span>
+          <span class="score-sub" id="lbl-risk-index">RISK SCORE</span>
+        </div>
+        <div style="font-weight:700; font-size:0.86rem;" id="score-label">Balanced</div>
+      </div>
+    </section>
+    <section class="card playbook-section">
+      <div class="regime-title" id="lbl-role-title">SELECT YOUR PROFILE FOR TAILORED DECISIONS</div>
+      <div class="role-tabs" id="role-tabs"></div>
+      <div class="playbook-grid" id="playbook-grid"></div>
+    </section>
+    <section class="layers-grid" id="layers-grid"></section>
+  </main>
+  <div class="modal-backdrop" id="json-modal">
+    <div class="modal">
+      <h3 id="modal-title">Paste AI JSON Response</h3>
+      <p style="font-size:0.82rem; color:#94a3b8;" id="modal-desc">Paste the JSON block returned by AI below.</p>
+      <textarea id="json-input" placeholder='{"s1_dist_days": 3}'></textarea>
+      <div class="modal-actions">
+        <button onclick="closeJsonModal()" id="btn-cancel">Cancel</button>
+        <button class="primary" onclick="applyJsonData()" id="btn-apply">Update</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script>
+    var currentLang = 'en';
+    var currentRole = 'household';
+    var defaultValues = {
+      s1_dist_days: 3, s2_gold_200dma_gap: -4.5, s3_us2y_yield: 4.35, s4_tga_trend: 'draining',
+      s5_dxy: 104.2, s6_cb_gold_tonnes: 60, s7_etf_flow: 'outflow', s8_gsr: 82.0,
+      s9_hy_spread: 3.15, s10_egypt_pmi: 50.4, s11_oil_wti: 78.5, s12_capex_trend: 'rising',
+      s13_sector_pe_mult: 1.4, s14_margin_debt: 'moderate', s15_monetization: 'positive',
+      s16_retail_share: 35, s17_policy_shock: 'none'
+    };
+    var state = Object.assign({}, defaultValues);
+
+    var i18n = {
+      en: {
+        title: "17-Signal Macro Command Center", subtitle: "Global + MENA / Egypt",
+        copyPrompt: "1. Copy AI Prompt", pasteJson: "2. Paste AI JSON", reset: "Reset", langBtn: "عربي",
+        regimeTitle: "SYSTEMIC REGIME DIAGNOSIS (4-GATE ENGINE)", riskIndex: "RISK SCORE",
+        roleTitle: "SELECT YOUR PROFILE FOR TAILORED DECISIONS",
+        modalTitle: "Paste AI JSON Response", modalDesc: "Paste the JSON block returned by AI below.",
+        cancel: "Cancel", apply: "Update",
+        toastCopied: "Prompt copied! Paste into AI, then paste JSON back here.",
+        toastUpdated: "Dashboard updated!", toastError: "Invalid JSON. Copy only the { ... } block.",
+        layers: [
+          { title: "Layer 1: Financial Plumbing & Gold", sub: "Wall Street flows, rates, liquidity & central bank gold." },
+          { title: "Layer 2: Real Economy & Credit", sub: "Credit spreads, Egypt/Global PMI, shipping & AI capex." },
+          { title: "Layer 3: Valuation & Bubble Risk", sub: "P/E multiples, margin debt, retail share & policy shocks." }
+        ],
+        roles: { household: "Household & Saver", business: "Business & Importer", investor: "Investor & Trader", executive: "Executive & Pro" },
+        statusLabels: { green: "HEALTHY", amber: "WATCH", red: "DANGER" }
+      },
+      ar: {
+        title: "مركز القيادة الاقتصادي (17 مؤشراً)", subtitle: "العالم + مصر والشرق الأوسط",
+        copyPrompt: "1. نسخ أمر التحديث", pasteJson: "2. لصق JSON", reset: "استعادة", langBtn: "English",
+        regimeTitle: "التشخيص الشامل للنظام المالي (البوابات الأربع)", riskIndex: "مؤشر المخاطر",
+        roleTitle: "اختر صفتك للحصول على خطة عمل مخصصة",
+        modalTitle: "لصق استجابة الذكاء الاصطناعي (JSON)", modalDesc: "الصق كود JSON أدناه.",
+        cancel: "إلغاء", apply: "تحديث",
+        toastCopied: "تم نسخ الأمر! الصقه في الذكاء الاصطناعي ثم الصق النتيجة هنا.",
+        toastUpdated: "تم تحديث اللوحة بنجاح!", toastError: "صيغة JSON غير صحيحة.",
+        layers: [
+          { title: "الطبقة 1: السيولة وتدفقات الذهب", sub: "تصريف المؤسسات، الفائدة، ومشتريات البنوك المركزية." },
+          { title: "الطبقة 2: الاقتصاد الحقيقي والائتمان", sub: "هوامش الائتمان، مؤشر PMI لمصر والعالم، والشحن." },
+          { title: "الطبقة 3: التقييمات ومخاطر الفقاعات", sub: "مضاعف الربحية، ديون الهامش، ونسبة تداول الأفراد." }
+        ],
+        roles: { household: "الأسرة والمدخر", business: "صاحب عمل ومستورد", investor: "مستثمر ومتداول", executive: "مهني وتنفيذي" },
+        statusLabels: { green: "آمن", amber: "حذر", red: "خطر" }
+      }
+    };
+
+    var signalsMeta = [
+      { id: 's1_dist_days', layer: 0, num: 1, type: 'number', step: '1',
+        en: { name: "Intraday Stock Distribution", unit: "days/10d", rule: "4+ Green-Open/Red-Close days = Institutional selling." },
+        ar: { name: "التصريف المؤسسي اليومي", unit: "أيام/10", rule: "4 أيام أو أكثر (افتتاح أخضر وإغلاق أحمر) = بيع مؤسسي." },
+        sourceName: "TradingView", sourceUrl: "https://tradingview.com",
+        eval: function(v) { return v >= 4 ? 'red' : (v >= 2 ? 'amber' : 'green'); } },
+      { id: 's2_gold_200dma_gap', layer: 0, num: 2, type: 'number', step: '0.5',
+        en: { name: "Gold 200-DMA Value Gap", unit: "% gap", rule: "Discount (< -3%) creates multi-year accumulation zone." },
+        ar: { name: "فجوة الذهب عن متوسط 200 يوم", unit: "% فجوة", rule: "الهبوط دون المتوسط (-3% فأكثر) يوفر فرصة تجميع." },
+        sourceName: "TradingView Gold", sourceUrl: "https://tradingview.comsymbols/XAUUSD/",
+        eval: function(v) { return v > 15 ? 'amber' : 'green'; } },
+      { id: 's3_us2y_yield', layer: 0, num: 3, type: 'number', step: '0.05',
+        en: { name: "2-Year Treasury Yield", unit: "%", rule: "Rates > 4.5% create drag on zero-yield gold/stocks." },
+        ar: { name: "عائد السندات لأجل عامين", unit: "%", rule: "الفائدة فوق 4.5% تضغط على الذهب والأسهم." },
+        sourceName: "FRED DGS2", sourceUrl: "https://stlouisfed.org",
+        eval: function(v) { return v >= 4.75 ? 'red' : (v >= 4.0 ? 'amber' : 'green'); } },
+      { id: 's4_tga_trend', layer: 0, num: 4, type: 'select',
+        options: [{ val: 'draining', en: 'Draining (Stimulus)', ar: 'سحب للأسواق (تحفيز)' }, { val: 'neutral', en: 'Neutral', ar: 'محايد' }, { val: 'refilling', en: 'Refilling (Tightening)', ar: 'تعبئة (تشديد)' }],
+        en: { name: "Treasury Liquidity (TGA)", unit: "flow", rule: "Draining TGA injects stealth liquidity & erodes idle cash." },
+        ar: { name: "سيولة حساب الخزانة (TGA)", unit: "تدفق", rule: "سحب الخزانة يضخ سيولة ويضعف القوة الشرائية للكاش." },
+        sourceName: "FRED WTREGEN", sourceUrl: "https://stlouisfed.org",
+        eval: function(v) { return v === 'refilling' ? 'amber' : 'green'; } },
+      { id: 's5_dxy', layer: 0, num: 5, type: 'number', step: '0.2',
+        en: { name: "US Dollar Index (DXY)", unit: "pts", rule: "DXY > 105 pressures commodities; falling DXY boosts metals." },
+        ar: { name: "مؤشر الدولار (DXY)", unit: "نقطة", rule: "فوق 105 يضغط على السلع؛ تراجعه يدعم المعادن." },
+        sourceName: "TradingView DXY", sourceUrl: "https://tradingview.comsymbols/TVC-DXY/",
+        eval: function(v) { return v >= 106 ? 'red' : (v >= 103 ? 'amber' : 'green'); } },
+      { id: 's6_cb_gold_tonnes', layer: 0, num: 6, type: 'number', step: '5',
+        en: { name: "Central Bank Gold Buying", unit: "t/mo", rule: "Benchmark ~60t/mo absorbs rate-driven dips." },
+        ar: { name: "مشتريات البنوك المركزية للذهب", unit: "طن/شهر", rule: "المعيار ~60 طن شهرياً يمتص تراجعات المضاربين." },
+        sourceName: "World Gold Council", sourceUrl: "https://gold.org",
+        eval: function(v) { return v >= 50 ? 'green' : (v >= 25 ? 'amber' : 'red'); } },
+      { id: 's7_etf_flow', layer: 0, num: 7, type: 'select',
+        options: [{ val: 'inflow', en: 'Inflows', ar: 'تدفقات داخلة' }, { val: 'neutral', en: 'Neutral', ar: 'محايد' }, { val: 'outflow', en: 'Outflows', ar: 'تدفقات خارجة' }],
+        en: { name: "Western Gold ETF Flows", unit: "flow", rule: "Outflows + high CB buying = Accumulation divergence." },
+        ar: { name: "تدفقات صناديق الذهب الغربية", unit: "اتجاه", rule: "خروج الصناديق مع شراء البنوك المركزية = فرصة تجميع." },
+        sourceName: "WGC ETF Data", sourceUrl: "https://gold.org/gold-etfs-holdings-and-flows",
+        eval: function(v) { return v === 'inflow' ? 'green' : 'amber'; } },
+      { id: 's8_gsr', layer: 0, num: 8, type: 'number', step: '1',
+        en: { name: "Gold-to-Silver Ratio", unit: "ratio", rule: ">80 favors Gold (defense); <65 favors Silver (growth)." },
+        ar: { name: "نسبة الذهب إلى الفضة", unit: "نسبة", rule: "فوق 80 يفضل الذهب؛ تحت 65 تتفوق الفضة." },
+        sourceName: "Gold/Silver Chart", sourceUrl: "https://tradingview.comsymbols/TVC-GOLDSILVER/",
+        eval: function(v) { return v >= 85 ? 'red' : (v >= 75 ? 'amber' : 'green'); } },
+      { id: 's9_hy_spread', layer: 1, num: 9, type: 'number', step: '0.1',
+        en: { name: "Corporate Credit Spreads", unit: "%", rule: "<4% = Dips are normal, NOT 2008 crash. >5.5% = Credit crunch." },
+        ar: { name: "هوامش الائتمان للشركات", unit: "%", rule: "أقل من 4% = التراجع طبيعي وليس انهياراً. فوق 5.5% = أزمة." },
+        sourceName: "FRED HY Spread", sourceUrl: "https://stlouisfed.org",
+        eval: function(v) { return v >= 5.5 ? 'red' : (v >= 4.0 ? 'amber' : 'green'); } },
+      { id: 's10_egypt_pmi', layer: 1, num: 10, type: 'number', step: '0.1',
+        en: { name: "S&P Global PMI (Egypt/Global)", unit: "pts", rule: ">50 = Expansion. Watch Input vs Output prices for margins." },
+        ar: { name: "مؤشر مديري المشتريات (مصر/العالم)", unit: "نقطة", rule: "فوق 50 = نمو. راقب تكلفة المدخلات لحماية هوامش الربح." },
+        sourceName: "S&P Global PMI", sourceUrl: "https://spglobal.com",
+        eval: function(v) { return v >= 50.0 ? 'green' : (v >= 48.0 ? 'amber' : 'red'); } },
+      { id: 's11_oil_wti', layer: 1, num: 11, type: 'number', step: '1',
+        en: { name: "WTI Oil & Freight Chokepoints", unit: "$/bbl", rule: "Spikes >$95 signal sticky inflation 60-90 days ahead." },
+        ar: { name: "نفط WTI وممرات الشحن", unit: "$/برميل", rule: "فوق 95$ ينذر بتضخم عنيد خلال 60-90 يوماً." },
+        sourceName: "IMF PortWatch", sourceUrl: "https://imf.org",
+        eval: function(v) { return v >= 95 ? 'red' : (v >= 82 ? 'amber' : 'green'); } },
+      { id: 's12_capex_trend', layer: 1, num: 12, type: 'select',
+        options: [{ val: 'rising', en: 'Rising (AI/Infra)', ar: 'صاعد (بنية وتقنية)' }, { val: 'flat', en: 'Flat', ar: 'مستقر' }, { val: 'falling', en: 'Falling', ar: 'هابط' }],
+        en: { name: "Hyperscaler Capex & Mobility", unit: "trend", rule: "Rising AI/grid capex & tourism confirm real growth." },
+        ar: { name: "الإنفاق الرأسمالي والسياحة", unit: "اتجاه", rule: "نمو الإنفاق على البنية والسياحة يؤكد استمرار النمو." },
+        sourceName: "TSMC / TSA", sourceUrl: "https://tsmc.com",
+        eval: function(v) { return v === 'falling' ? 'red' : (v === 'flat' ? 'amber' : 'green'); } },
+      { id: 's13_sector_pe_mult', layer: 2, num: 13, type: 'number', step: '0.2',
+        en: { name: "Sector P/E vs Benchmark", unit: "x", rule: ">3x benchmark P/E without profit growth = Bubble danger." },
+        ar: { name: "مضاعف ربحية القطاع للمؤشر", unit: "ضعف", rule: "فوق 3 أضعاف المؤشر دون نمو أرباح = منطقة فقاعة." },
+        sourceName: "EGX / S&P Data", sourceUrl: "https://egx.com.eg",
+        eval: function(v) { return v >= 3.0 ? 'red' : (v >= 1.8 ? 'amber' : 'green'); } },
+      { id: 's14_margin_debt', layer: 2, num: 14, type: 'select',
+        options: [{ val: 'low', en: 'Low', ar: 'منخفض' }, { val: 'moderate', en: 'Moderate', ar: 'متوسط' }, { val: 'record', en: 'Record High', ar: 'قياسي مرتفع' }],
+        en: { name: "Margin Debt & Leverage", unit: "level", rule: "Record margin debt triggers forced broker liquidations on dips." },
+        ar: { name: "ديون الهامش والرافعة", unit: "مستوى", rule: "الديون القياسية تسبب بيعاً قسرياً عند أي تصحيح." },
+        sourceName: "FINRA / EGX", sourceUrl: "https://finra.org",
+        eval: function(v) { return v === 'record' ? 'red' : (v === 'moderate' ? 'amber' : 'green'); } },
+      { id: 's15_monetization', layer: 2, num: 15, type: 'select',
+        options: [{ val: 'positive', en: 'Strong ROI', ar: 'عائد قوي' }, { val: 'mixed', en: 'Mixed Margins', ar: 'هوامش متباينة' }, { val: 'unmonetized', en: 'High Hype / Low ROI', ar: 'ضجيج بلا أرباح' }],
+        en: { name: "Monetization-to-Capex", unit: "ROI", rule: "High adoption + falling pricing power = poor stock returns." },
+        ar: { name: "تحقيق الأرباح من الإنفاق", unit: "عائد", rule: "انتشار واسع مع تراجع الأسعار = عائد ضعيف للمساهمين." },
+        sourceName: "SEC 10-Q Filings", sourceUrl: "https://sec.gov",
+        eval: function(v) { return v === 'unmonetized' ? 'red' : (v === 'mixed' ? 'amber' : 'green'); } },
+      { id: 's16_retail_share', layer: 2, num: 16, type: 'number', step: '5',
+        en: { name: "Retail Volume Share", unit: "%", rule: ">75% retail volume signals emotional FOMO & violent swings." },
+        ar: { name: "حصة تداولات الأفراد", unit: "%", rule: "فوق 75% ينذر بهوس المضاربة وتقلبات عنيفة." },
+        sourceName: "EGX Activity", sourceUrl: "https://egx.com.eg",
+        eval: function(v) { return v >= 75 ? 'red' : (v >= 55 ? 'amber' : 'green'); } },
+      { id: 's17_policy_shock', layer: 2, num: 17, type: 'select',
+        options: [{ val: 'none', en: 'Normal Calendar', ar: 'طبيعي' }, { val: 'intervention', en: 'State Buying', ar: 'تدخل حكومي' }, { val: 'tax_deadline', en: 'Tax / Reg Shock', ar: 'موعد ضريبي/تنظيمي' }],
+        en: { name: "Policy & Tax Calendar", unit: "event", rule: "Tax deadlines & regulatory shifts trigger sudden cash drains." },
+        ar: { name: "الضرائب والتدخل الحكومي", unit: "حدث", rule: "مواعيد الضرائب والتنظيمات تسبب سحب سيولة مفاجئ." },
+        sourceName: "MoF / Central Banks", sourceUrl: "https://mof.gov.eg",
+        eval: function(v) { return v === 'tax_deadline' ? 'red' : (v === 'intervention' ? 'amber' : 'green'); } }
+    ];
+    var playbooks = {
+      household: {
+        en: [
+          { title: "1. 90-Day Liquidity Shield", desc: "Keep 3-6 months of expenses in high-yield safe instruments (T-bills/savings with positive real rates)." },
+          { title: "2. Kill Variable Debt", desc: "Pay off credit cards and variable loans immediately while interest rates stay elevated." },
+          { title: "3. Calm DCA (No FOMO)", desc: "Never buy after 100% dinner-table hype. Accumulate gold/index funds slowly below the 200-DMA." }
+        ],
+        ar: [
+          { title: "1. درع السيولة لـ 90 يوماً", desc: "احتفظ بمصاريف 3-6 أشهر في أذون خزانة أو حسابات ادخار ذات عائد حقيقي موجب." },
+          { title: "2. تخلص من الديون المتغيرة", desc: "سدد بطاقات الائتمان والقروض متغيرة الفائدة فوراً في ظل الفائدة المرتفعة." },
+          { title: "3. الشراء الدوري (لا لهوس المجالس)", desc: "لا تشترِ بعد قفزات 100%. اشترِ الذهب أو الصناديق بهدوء دون متوسط 200 يوم." }
+        ]
+      },
+      business: {
+        en: [
+          { title: "1. Pre-Buy on Freight Lulls", desc: "Use Signal #11 to lock freight contracts and build buffer inventory before Red Sea/Suez bottlenecks hit costs." },
+          { title: "2. Micro-Price Adjustments", desc: "When PMI Input Prices outpace Output Prices (#10), raise prices in small frequent steps to protect margins." },
+          { title: "3. Audit Tech ROI (#15)", desc: "Only fund AI/software tools that demonstrably cut unit costs or raise net profit margins." }
+        ],
+        ar: [
+          { title: "1. تأمين المخزون عند هدوء الشحن", desc: "استخدم مؤشر 11 لتثبيت عقود الشحن وزيادة المخزون قبل ارتفاع تكاليف الاستيراد." },
+          { title: "2. التعديل التدريجي للأسعار", desc: "عند ارتفاع تكلفة المدخلات في مؤشر PMI (#10)، مرر الزيادة تدريجياً لحماية هوامشك." },
+          { title: "3. تدقيق عائد التكنولوجيا (#15)", desc: "استثمر فقط في الأدوات التي تخفض التكلفة أو تزيد صافي الربح فعلياً." }
+        ]
+      },
+      investor: {
+        en: [
+          { title: "1. Credit Spread Override (#9)", desc: "If High-Yield Spreads stay <4%, treat equity dips as buying opportunities rather than a 2008 crash." },
+          { title: "2. Exit Leverage Bubbles (#13/#14)", desc: "Trim profits aggressively when Sector P/E >3x benchmark and Margin Debt hits records." },
+          { title: "3. Gold First, Silver Later", desc: "Hold Gold for central bank backing (#6); rotate to Silver only when 2Y Yields (#3) peak." }
+        ],
+        ar: [
+          { title: "1. فلتر هوامش الائتمان (#9)", desc: "إذا ظلت هوامش الائتمان تحت 4%، تعامل مع هبوط الأسهم كفرصة شراء وليس انهياراً." },
+          { title: "2. اخرج من فقاعات الهامش (#13/#14)", desc: "اجنِ أرباحك عند تجاوز مضاعف الربحية 3 أضعاف المؤشر مع ديون هامش قياسية." },
+          { title: "3. الذهب أولاً ثم الفضة", desc: "احتفظ بالذهب لدعم البنوك المركزية (#6)، وانتقل للفضة فقط عند ذروة الفائدة (#3)." }
+        ]
+      },
+      executive: {
+        en: [
+          { title: "1. Follow Capex Bottlenecks (#12)", desc: "Align career and budgets with AI deployment, power grids, healthcare, and supply-chain logistics." },
+          { title: "2. Focus on Monetization (#15)", desc: "Champion projects with measurable revenue conversion rather than unmonetized hype." },
+          { title: "3. Hedge Personal Income", desc: "Tie bonuses to margin/revenue milestones and diversify savings across yield and hard assets." }
+        ],
+        ar: [
+          { title: "1. اتبع نقاط الإنفاق الرأسمالي (#12)", desc: "اربط مهاراتك وميزانياتك بتطبيقات الذكاء الاصطناعي، الطاقة، الرعاية الصحية، واللوجستيات." },
+          { title: "2. ركز على تحقيق الأرباح (#15)", desc: "ادعم المشاريع ذات العائد المالي الملموس بدلاً من المشاريع التجريبية غير المربحة." },
+          { title: "3. تحوّط لدخلك الشخصي", desc: "اربط الحوافز بالأرباح ونوّع مدخراتك بين العائد الثابت والأصول الصلبة." }
+        ]
+      }
+    };
+    function evaluateDashboard() {
+      var redCount = 0, amberCount = 0, evals = {};
+      for (var i = 0; i < signalsMeta.length; i++) {
+        var s = signalsMeta[i], st = s.eval(state[s.id]);
+        evals[s.id] = st;
+        if (st === 'red') redCount++; else if (st === 'amber') amberCount++;
+      }
+      var riskScore = Math.round(((redCount * 1.0 + amberCount * 0.5) / signalsMeta.length) * 100);
+      var gate1Healthy = (evals.s9_hy_spread === 'green' && evals.s10_egypt_pmi !== 'red' && evals.s12_capex_trend === 'rising');
+      var gate2Bubble = (evals.s13_sector_pe_mult === 'red' || evals.s14_margin_debt === 'record' || evals.s16_retail_share === 'red');
+      var gate3GoldFloor = (evals.s6_cb_gold_tonnes === 'green');
+
+      var scoreCircle = document.getElementById('score-circle');
+      document.getElementById('score-num').textContent = riskScore;
+      var scoreLabel = document.getElementById('score-label');
+
+      if (riskScore >= 60) { scoreCircle.style.borderColor = '#ef4444'; scoreLabel.textContent = currentLang === 'en' ? 'HIGH STRESS' : 'ضغط مرتفع'; }
+      else if (riskScore >= 35) { scoreCircle.style.borderColor = '#f59e0b'; scoreLabel.textContent = currentLang === 'en' ? 'SELECTIVE' : 'انتقائي'; }
+      else { scoreCircle.style.borderColor = '#10b981'; scoreLabel.textContent = currentLang === 'en' ? 'EXPANSION' : 'توسع'; }
+
+      var headlineEl = document.getElementById('regime-headline'), descEl = document.getElementById('regime-desc'), pillsEl = document.getElementById('gate-pills');
+      if (currentLang === 'en') {
+        if (evals.s9_hy_spread === 'red') { headlineEl.textContent = "REGIME: Credit Crunch — Preserve Capital"; descEl.textContent = "Credit spreads widening. Prioritize T-bills and cash liquidity."; }
+        else if (gate2Bubble) { headlineEl.textContent = "REGIME: Resilient Economy + Speculative Bubble Risk"; descEl.textContent = "Real economy is growing, but extreme leverage/P/E warn of sharp sector pullbacks."; }
+        else { headlineEl.textContent = "REGIME: 'No-Landing' Growth + Sticky Rate Cross-Currents"; descEl.textContent = "Credit is calm and capex supports growth, while elevated rates favor disciplined allocation."; }
+        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">Gate 1 Economy: ' + (gate1Healthy ? 'Expanding' : 'Mixed') + '</span>' +
+          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">Gate 2 Bubble: ' + (gate2Bubble ? 'Danger' : 'Contained') + '</span>' +
+          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">Gate 3 Gold Floor: ' + (gate3GoldFloor ? 'Strong' : 'Weak') + '</span>';
+      } else {
+        if (evals.s9_hy_spread === 'red') { headlineEl.textContent = "التشخيص: أزمة ائتمان — حماية رأس المال"; descEl.textContent = "اتساع هوامش الائتمان. ركز على أذون الخزانة والسيولة."; }
+        else if (gate2Bubble) { headlineEl.textContent = "التشخيص: اقتصاد متماسك مع مخاطر فقاعة مضاربة"; descEl.textContent = "الاقتصاد ينمو، لكن التقييمات والديون المرتفعة تنذر بتصحيح حاد."; }
+        else { headlineEl.textContent = "التشخيص: نمو مستمر ('لا هبوط') مع فائدة مرتفعة"; descEl.textContent = "الائتمان هادئ والإنفاق يدعم النمو، مما يتطلب توزيعاً منضبطاً للأصول."; }
+        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">بوابة 1 الاقتصاد: ' + (gate1Healthy ? 'نمو' : 'متباين') + '</span>' +
+          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">بوابة 2 الفقاعات: ' + (gate2Bubble ? 'خطر' : 'مسيطر عليها') + '</span>' +
+          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">بوابة 3 الذهب: ' + (gate3GoldFloor ? 'قوية' : 'ضعيفة') + '</span>';
+      }
+      return evals;
+    }
+
+    function renderAll() {
+      var t = i18n[currentLang];
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('ui-title').textContent = t.title;
+      document.getElementById('ui-subtitle').textContent = t.subtitle;
+      document.getElementById('btn-copy-prompt').textContent = t.copyPrompt;
+      document.getElementById('btn-paste-json').textContent = t.pasteJson;
+      document.getElementById('btn-reset').textContent = t.reset;
+      document.getElementById('btn-lang').textContent = t.langBtn;
+      document.getElementById('lbl-regime-title').textContent = t.regimeTitle;
+      document.getElementById('lbl-risk-index').textContent = t.riskIndex;
+      document.getElementById('lbl-role-title').textContent = t.roleTitle;
+      document.getElementById('modal-title').textContent = t.modalTitle;
+      document.getElementById('modal-desc').textContent = t.modalDesc;
+      document.getElementById('btn-cancel').textContent = t.cancel;
+      document.getElementById('btn-apply').textContent = t.apply;
+
+      var evals = evaluateDashboard();
+      var roleKeys = Object.keys(t.roles), tabsHtml = '';
+      for (var r = 0; r < roleKeys.length; r++) {
+        var rk = roleKeys[r];
+        tabsHtml += '<button class="role-tab ' + (currentRole === rk ? 'active' : '') + '" onclick="selectRole(\'' + rk + '\')">' + t.roles[rk] + '</button>';
+      }
+      document.getElementById('role-tabs').innerHTML = tabsHtml;
+
+      var pbList = playbooks[currentRole][currentLang], pbHtml = '';
+      for (var p = 0; p < pbList.length; p++) {
+        pbHtml += '<div class="action-item"><h4>' + pbList[p].title + '</h4><p>' + pbList[p].desc + '</p></div>';
+      }
+      document.getElementById('playbook-grid').innerHTML = pbHtml;
+
+      var layersHtml = '';
+      for (var l = 0; l < t.layers.length; l++) {
+        var layerObj = t.layers[l], cardsHtml = '';
+        for (var sIdx = 0; sIdx < signalsMeta.length; sIdx++) {
+          var s = signalsMeta[sIdx];
+          if (s.layer !== l) continue;
+          var st = evals[s.id], m = s[currentLang], inputHtml = '';
+          if (s.type === 'number') {
+            inputHtml = '<input type="number" step="' + s.step + '" value="' + state[s.id] + '" onchange="updateVal(\'' + s.id + '\', parseFloat(this.value))" />';
+          } else {
+            var opts = '';
+            for (var o = 0; o < s.options.length; o++) {
+              var opt = s.options[o];
+              opts += '<option value="' + opt.val + '" ' + (state[s.id] === opt.val ? 'selected' : '') + '>' + opt[currentLang] + '</option>';
+            }
+            inputHtml = '<select onchange="updateVal(\'' + s.id + '\', this.value)">' + opts + '</select>';
+          }
+          cardsHtml += '<div class="signal-card"><div class="sig-top"><div class="sig-name"><span class="sig-num">#' + s.num + '</span> ' + m.name + '</div><span class="status-badge status-' + st + '">' + t.statusLabels[st] + '</span></div><div class="sig-input-row">' + inputHtml + '<span class="sig-unit">' + m.unit + '</span></div><div class="sig-rule">' + m.rule + '</div><div class="sig-source"><a href="' + s.sourceUrl + '" target="_blank">↗ ' + s.sourceName + '</a></div></div>';
+        }
+        layersHtml += '<div><div class="layer-header"><h2>' + layerObj.title + '</h2><p>' + layerObj.sub + '</p></div>' + cardsHtml + '</div>';
+      }
+      document.getElementById('layers-grid').innerHTML = layersHtml;
+    }
+
+    function updateVal(key, val) { if ((val !== null && !isNaN(val)) || typeof val === 'string') { state[key] = val; renderAll(); } }
+    function selectRole(role) { currentRole = role; renderAll(); }
+    function toggleLang() { currentLang = currentLang === 'en' ? 'ar' : 'en'; renderAll(); }
+    function resetDefaults() { state = Object.assign({}, defaultValues); renderAll(); }
+    function showToast(msg) { var el = document.getElementById('toast'); el.textContent = msg; el.style.display = 'block'; setTimeout(function() { el.style.display = 'none'; }, 3500); }
+    function copyUpdatePrompt() {
+      var promptText = 'Search live financial sources for today\'s verified figures for these 17 metrics. Do NOT guess any number; set unverifiable fields to null. Return ONLY a single valid JSON object with these keys: {"s1_dist_days": 3, "s2_gold_200dma_gap": -4.5, "s3_us2y_yield": 4.35, "s4_tga_trend": "draining", "s5_dxy": 104.2, "s6_cb_gold_tonnes": 60, "s7_etf_flow": "outflow", "s8_gsr": 82.0, "s9_hy_spread": 3.15, "s10_egypt_pmi": 50.4, "s11_oil_wti": 78.5, "s12_capex_trend": "rising", "s13_sector_pe_mult": 1.4, "s14_margin_debt": "moderate", "s15_monetization": "positive", "s16_retail_share": 35, "s17_policy_shock": "none"}';
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(promptText).then(function() { showToast(i18n[currentLang].toastCopied); }); }
+      else { openJsonModal(); document.getElementById('json-input').value = promptText; }
+    }
+    function openJsonModal() { document.getElementById('json-input').value = ''; document.getElementById('json-modal').classList.add('open'); }
+    function closeJsonModal() { document.getElementById('json-modal').classList.remove('open'); }
+    function applyJsonData() {
+      var raw = document.getElementById('json-input').value.trim();
+      var start = raw.indexOf('{'), end = raw.lastIndexOf('}');
+      if (start === -1 || end === -1) { alert(i18n[currentLang].toastError); return; }
+      try {
+        var parsed = JSON.parse(raw.substring(start, end + 1)), keys = Object.keys(defaultValues);
+        for (var i = 0; i < keys.length; i++) { var k = keys[i]; if (parsed[k] !== undefined && parsed[k] !== null && parsed[k] !== '') state[k] = parsed[k]; }
+        closeJsonModal(); renderAll(); showToast(i18n[currentLang].toastUpdated);
+      } catch (e) { alert(i18n[currentLang].toastError); }
+    }
+    renderAll();
+  </script>
+</body>
+</html>
