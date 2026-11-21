@@ -75,6 +75,7 @@
       <span class="badge-tag" id="ui-subtitle">Global + MENA / Egypt</span>
     </div>
     <div class="controls">
+      <button onclick="shareVerdict()" id="btn-share">Share Verdict</button>
       <button class="primary" onclick="copyUpdatePrompt()" id="btn-copy-prompt">1. Copy AI Prompt</button>
       <button onclick="openJsonModal()" id="btn-paste-json">2. Paste AI JSON</button>
       <button onclick="resetDefaults()" id="btn-reset">Reset</button>
@@ -131,7 +132,8 @@
     var i18n = {
       en: {
         title: "17-Signal Macro Command Center", subtitle: "Global + MENA / Egypt",
-        copyPrompt: "1. Copy AI Prompt", pasteJson: "2. Paste AI JSON", reset: "Reset", langBtn: "عربي",
+        copyPrompt: "1. Copy AI Prompt", pasteJson: "2. Paste AI JSON", reset: "Reset", shareBtn: "Share Verdict", toastShared: "Verdict copied for WhatsApp!",
+        langBtn: "عربي",
         regimeTitle: "SYSTEMIC REGIME DIAGNOSIS (4-GATE ENGINE)", riskIndex: "RISK SCORE",
         roleTitle: "SELECT YOUR PROFILE FOR TAILORED DECISIONS",
         modalTitle: "Paste AI JSON Response", modalDesc: "Paste the JSON block returned by AI below.",
@@ -148,7 +150,8 @@
       },
       ar: {
         title: "مركز القيادة الاقتصادي (17 مؤشراً)", subtitle: "العالم + مصر والشرق الأوسط",
-        copyPrompt: "1. نسخ أمر التحديث", pasteJson: "2. لصق JSON", reset: "استعادة", langBtn: "English",
+        copyPrompt: "1. نسخ أمر التحديث", pasteJson: "2. لصق JSON", reset: "استعادة", shareBtn: "مشاركة الخلاصة", toastShared: "تم نسخ الخلاصة للواتساب!",
+        langBtn: "English",
         regimeTitle: "التشخيص الشامل للنظام المالي (البوابات الأربع)", riskIndex: "مؤشر المخاطر",
         roleTitle: "اختر صفتك للحصول على خطة عمل مخصصة",
         modalTitle: "لصق استجابة الذكاء الاصطناعي (JSON)", modalDesc: "الصق كود JSON أدناه.",
@@ -356,6 +359,7 @@
       document.getElementById('btn-copy-prompt').textContent = t.copyPrompt;
       document.getElementById('btn-paste-json').textContent = t.pasteJson;
       document.getElementById('btn-reset').textContent = t.reset;
+      document.getElementById('btn-share').textContent = t.shareBtn;
       document.getElementById('btn-lang').textContent = t.langBtn;
       document.getElementById('lbl-regime-title').textContent = t.regimeTitle;
       document.getElementById('lbl-risk-index').textContent = t.riskIndex;
@@ -412,6 +416,22 @@
       var promptText = 'Search live financial sources for today\'s verified figures for these 17 metrics. Do NOT guess any number; set unverifiable fields to null. Return ONLY a single valid JSON object with these keys: {"s1_dist_days": 3, "s2_gold_200dma_gap": -4.5, "s3_us2y_yield": 4.35, "s4_tga_trend": "draining", "s5_dxy": 104.2, "s6_cb_gold_tonnes": 60, "s7_etf_flow": "outflow", "s8_gsr": 82.0, "s9_hy_spread": 3.15, "s10_egypt_pmi": 50.4, "s11_oil_wti": 78.5, "s12_capex_trend": "rising", "s13_sector_pe_mult": 1.4, "s14_margin_debt": "moderate", "s15_monetization": "positive", "s16_retail_share": 35, "s17_policy_shock": "none"}';
       if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(promptText).then(function() { showToast(i18n[currentLang].toastCopied); }); }
       else { openJsonModal(); document.getElementById('json-input').value = promptText; }
+    }
+        function shareVerdict() {
+      var title = document.getElementById('regime-headline').textContent;
+      var score = document.getElementById('score-num').textContent;
+      var label = document.getElementById('score-label').textContent;
+      var desc = document.getElementById('regime-desc').textContent;
+      var url = window.location.href;
+      var summary = currentLang === 'en'
+        ? "📊 *17-Signal Macro Command Center*\n• *Risk Score:* " + score + "/100 (" + label + ")\n• *Diagnosis:* " + title + "\n• *Takeaway:* " + desc + "\n\n🔗 Live Tool: " + url
+        : "📊 *مركز القيادة الاقتصادي (17 مؤشراً)*\n• *مؤشر المخاطر:* " + score + "/100 (" + label + ")\n• *التشخيص:* " + title + "\n• *الخلاصة:* " + desc + "\n\n🔗 الرابط المباشر: " + url;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summary).then(function() { showToast(i18n[currentLang].toastShared); });
+      } else {
+        openJsonModal();
+        document.getElementById('json-input').value = summary;
+      }
     }
     function openJsonModal() { document.getElementById('json-input').value = ''; document.getElementById('json-modal').classList.add('open'); }
     function closeJsonModal() { document.getElementById('json-modal').classList.remove('open'); }
