@@ -252,8 +252,8 @@
         eval: function(v) { return v >= 3.0 ? 'red' : (v >= 1.8 ? 'amber' : 'green'); } },
       { id: 's14_margin_debt', layer: 2, num: 14, type: 'select',
         options: [{ val: 'low', en: 'Low (<$0.9T)', ar: 'منخفض' }, { val: 'moderate', en: 'Moderate ($0.9T-$1.3T)', ar: 'متوسط' }, { val: 'record', en: 'Record High (>$1.3T)', ar: 'قياسي مرتفع' }],
-        en: { name: "FINRA Margin Debt & Leverage", unit: "level", rule: "Record margin debt triggers forced broker liquidations on dips." },
-        ar: { name: "ديون الهامش والرافعة المالية", unit: "مستوى", rule: "الديون القياسية تسبب بيعاً قسرياً عند أي تصحيح." },
+               en: { name: "Brokerage Margin Financing (FINRA)", unit: "level", rule: "Record leveraged borrowing triggers forced liquidations on dips." },
+        ar: { name: "التمويل بالهامش والرافعة المالية", unit: "مستوى", rule: "ارتفاع الشراء بالائتمان يسبب بيعاً قسرياً لتغطية المديونية عند أي هبوط." },
         sourceName: "FINRA Margin Stats", sourceUrl: "https://finra.org",
         eval: function(v) { return v === 'record' ? 'red' : (v === 'moderate' ? 'amber' : 'green'); } },
       { id: 's15_monetization', layer: 2, num: 15, type: 'select',
@@ -302,12 +302,12 @@
       },
       investor: {
         en: [
-          { horizon: "SHORT-TERM (0–3 MOS)", title: "Zero Margin & Cash-Squeeze Discipline", desc: "FINRA margin debt is at record highs ($1.48T)—use zero borrowed money. When leveraged AI/tech funds sell winners for cash, do not panic-sell quality shares as long as Credit Spreads (#9) stay <4%." },
+                    { horizon: "SHORT-TERM (0–3 MOS)", title: "Cash Only (No Margin) & Credit Filter", desc: "When market leverage (#14) is elevated, use zero borrowed funds (no margin financing). Do not panic-sell quality assets during sudden liquidity-driven dips as long as Corporate Credit Spreads (#9) stay below 4%." },
           { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Gold First, Silver Only After Rate Peak", desc: "Hold Gold while central banks buy ~107t/mo into paper dips. Avoid chasing Silver while GSR (#8) >85; rotate into Silver only when 2Y yields (#3) peak and turn downward." },
           { horizon: "LONG-TERM (1–5 YRS)", title: "Profitable Infrastructure & Cash-Flowing Equities", desc: "Accumulate profitable companies with real pricing power—power utilities, electrical grids, energy, semiconductors, and export leaders—while avoiding cash-burning hype stocks (#13/#15)." }
         ],
         ar: [
-          { horizon: "المدى القصير (0–3 شهور)", title: "صفر شراء بالهامش وفهم ضغط السيولة", desc: "ديون الهامش في مستويات قياسية—تجنب الاقتراض تماماً. عندما تبيع صناديق التكنولوجيا أسهمها لتوفير كاش، لا تبع أسهمك القوية بذعر طالما هوامش الائتمان (#9) تحت 4%." },
+                    { horizon: "المدى القصير (0–3 شهور)", title: "الشراء بالكاش فقط (بدون تمويل بالهامش) وفلتر الائتمان", desc: "عند ارتفاع مستويات الرافعة المالية (#14)، تجنب التمويل بالهامش أو الاقتراض للاستثمار تماماً. ولا تبع أصولك القوية بذعر أثناء موجات البيع لتوفير السيولة طالما هوامش ائتمان الشركات (#9) تحت 4%." },
           { horizon: "المدى المتوسط (3–12 شهراً)", title: "الذهب أولاً والفضة بعد ذروة الفائدة", desc: "احتفظ بالذهب مدعوماً بشراء البنوك المركزية (~107 طن/شهر). تجنب مطاردة الفضة طالما النسبة (#8) فوق 85، وانتقل إليها فقط عند ذروة الفائدة (#3)." },
           { horizon: "المدى الطويل (1–5 سنوات)", title: "أسهم البنية التحتية والشركات الرابحة", desc: "ركّز على الشركات الرابحة ذات القدرة التسعيرية: الكهرباء، الشبكات، الطاقة، أشباه الموصلات، والشركات التصديرية—وتجنب الأسهم الخاسرة ذات الضجيج العالي." }
         ]
