@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>17-Signal Macro Command Center</title>
+  <title>Market & Capital Compass (17-Indicator Engine)</title>
   <style>
     :root {
       --bg-main: #0b1120; --bg-card: #131c31; --bg-input: #0f172a; --border: #263554;
@@ -21,15 +21,16 @@
     button { cursor: pointer; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; }
     button.primary { background: var(--accent); color: #0b1120; border-color: var(--accent); }
     .container { max-width: 1300px; margin: 0 auto; padding: 16px; }
-    .hero-grid { display: grid; grid-template-columns: 2.2fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .hero-grid { display: grid; grid-template-columns: 2.3fr 1fr; gap: 14px; margin-bottom: 18px; }
     @media (max-width: 850px) { .hero-grid { grid-template-columns: 1fr; } }
     .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
     .regime-top-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
     .regime-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); }
     .as-of-badge { font-size: 0.74rem; color: var(--accent); background: rgba(56,189,248,0.1); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
-    .regime-headline { font-size: 1.18rem; font-weight: 700; margin-bottom: 8px; }
-    .regime-why { background: #0f172a; border-inline-start: 3px solid var(--accent); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 12px; }
-    .gate-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .regime-headline { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+    .logic-box { background: #0f172a; border-inline-start: 3px solid var(--accent); padding: 10px 12px; border-radius: 6px; font-size: 0.84rem; color: var(--text-primary); margin-bottom: 8px; }
+    .logic-box.pro { border-inline-start-color: var(--amber); color: #cbd5e1; }
+    .gate-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
     .pill { padding: 4px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 600; }
     .pill.green { background: var(--green-bg); color: var(--green); }
     .pill.amber { background: var(--amber-bg); color: var(--amber); }
@@ -75,8 +76,8 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <h1 id="ui-title">17-Signal Macro Command Center</h1>
-      <span class="badge-tag" id="ui-subtitle">Global + MENA / Egypt</span>
+      <h1 id="ui-title">Market & Capital Compass</h1>
+      <span class="badge-tag" id="ui-subtitle">Powered by 17-Indicator Engine</span>
     </div>
     <div class="controls">
       <button class="primary" onclick="copyUpdatePrompt()" id="btn-copy-prompt">1. Copy AI Prompt</button>
@@ -90,11 +91,12 @@
     <section class="hero-grid">
       <div class="card">
         <div class="regime-top-row">
-          <span class="regime-title" id="lbl-regime-title">SYSTEMIC REGIME DIAGNOSIS & VOLATILITY MAP</span>
-          <span class="as-of-badge" id="as-of-date">As of: Nov 22, 2026</span>
+          <span class="regime-title" id="lbl-regime-title">MARKET DIRECTION & CAPITAL LOGIC</span>
+          <span class="as-of-badge" id="as-of-date">As of: Nov 23, 2026</span>
         </div>
         <div class="regime-headline" id="regime-headline">Loading...</div>
-        <div class="regime-why" id="regime-why"></div>
+        <div class="logic-box" id="regime-plain"></div>
+        <div class="logic-box pro" id="regime-pro"></div>
         <div class="gate-pills" id="gate-pills"></div>
       </div>
       <div class="card score-box">
@@ -106,7 +108,7 @@
       </div>
     </section>
     <section class="card playbook-section">
-      <div class="regime-title" id="lbl-role-title">SELECT YOUR PROFILE FOR SHORT / MEDIUM / LONG-TERM DECISIONS</div>
+      <div class="regime-title" id="lbl-role-title">SELECT YOUR PROFILE FOR MULTI-ASSET PLANS (SHORT / MEDIUM / LONG TERM)</div>
       <div class="role-tabs" id="role-tabs"></div>
       <div class="playbook-grid" id="playbook-grid"></div>
     </section>
@@ -116,7 +118,7 @@
     <div class="modal">
       <h3 id="modal-title">Paste AI JSON Response</h3>
       <p style="font-size:0.82rem; color:#94a3b8;" id="modal-desc">Paste the JSON block returned by AI below.</p>
-      <textarea id="json-input" placeholder='{"as_of_date": "Nov 22, 2026", "s3_us2y_yield": 4.76}'></textarea>
+      <textarea id="json-input" placeholder='{"as_of_date": "Nov 23, 2026", "s3_us2y_yield": 4.76}'></textarea>
       <div class="modal-actions">
         <button onclick="closeJsonModal()" id="btn-cancel">Cancel</button>
         <button class="primary" onclick="applyJsonData()" id="btn-apply">Update</button>
@@ -128,7 +130,7 @@
     var currentLang = 'en';
     var currentRole = 'household';
     var defaultValues = {
-      as_of_date: "Nov 22, 2026",
+      as_of_date: "Nov 23, 2026",
       s1_dist_days: 3, s2_gold_200dma_gap: 4.2, s3_us2y_yield: 4.76, s4_tga_trend: 'draining',
       s5_dxy: 102.29, s6_cb_gold_tonnes: 107.1, s7_etf_flow: 'inflow', s8_gsr: 85.5,
       s9_hy_spread: 3.52, s10_egypt_pmi: 47.2, s11_oil_wti: 83.5, s12_capex_trend: 'rising',
@@ -139,34 +141,34 @@
 
     var i18n = {
       en: {
-        title: "17-Signal Macro Command Center", subtitle: "Global + MENA / Egypt",
+        title: "Market & Capital Compass", subtitle: "Powered by 17-Indicator Engine",
         copyPrompt: "1. Copy AI Prompt", pasteJson: "2. Paste AI JSON", shareBtn: "Share Verdict",
         reset: "Reset", langBtn: "عربي",
-        regimeTitle: "SYSTEMIC REGIME DIAGNOSIS & VOLATILITY MAP", riskIndex: "RISK SCORE",
-        roleTitle: "SELECT YOUR PROFILE FOR SHORT / MEDIUM / LONG-TERM DECISIONS",
+        regimeTitle: "MARKET DIRECTION & CAPITAL LOGIC", riskIndex: "RISK SCORE",
+        roleTitle: "SELECT YOUR PROFILE FOR MULTI-ASSET PLANS (SHORT / MEDIUM / LONG TERM)",
         modalTitle: "Paste AI JSON Response", modalDesc: "Paste the JSON block returned by AI below.",
         cancel: "Cancel", apply: "Update",
-        toastCopied: "Calibrated AI Prompt copied! Paste into AI, then paste JSON back here.",
+        toastCopied: "Upgraded AI Prompt copied! Paste into AI, then paste JSON back here.",
         toastUpdated: "Dashboard updated with verified figures!",
         toastShared: "Full WhatsApp summary copied to clipboard!",
         toastError: "Invalid JSON. Copy only the { ... } block.",
         layers: [
-          { title: "Layer 1: Financial Plumbing & Gold", sub: "Wall Street distribution, Fed rates, TGA liquidity & central bank gold." },
+          { title: "Layer 1: Financial Plumbing & Gold", sub: "Institutional stock selling, interest rates, liquidity & central bank gold." },
           { title: "Layer 2: Real Economy & Credit", sub: "Credit spreads (crash filter), Egypt/Global PMI, shipping & AI capex." },
           { title: "Layer 3: Valuation & Bubble Risk", sub: "P/E multiples, margin debt, retail share & policy shocks." }
         ],
-        roles: { household: "Household & Saver", business: "Business & Importer", investor: "Investor & Trader", executive: "Executive & Pro" },
+        roles: { household: "Family & Household", business: "Business & Importer", investor: "Investor & Trader", executive: "Executive & Pro" },
         statusLabels: { green: "HEALTHY", amber: "WATCH", red: "DANGER" }
       },
       ar: {
-        title: "مركز القيادة الاقتصادي (17 مؤشراً)", subtitle: "العالم + مصر والشرق الأوسط",
+        title: "بوصلة الأسواق ورأس المال", subtitle: "مدعومة بمحرك الـ 17 مؤشراً الاقتصادي",
         copyPrompt: "1. نسخ أمر التحديث", pasteJson: "2. لصق JSON", shareBtn: "مشاركة الخلاصة",
         reset: "استعادة", langBtn: "English",
-        regimeTitle: "التشخيص الشامل وخريطة التقلبات", riskIndex: "مؤشر المخاطر",
-        roleTitle: "اختر صفتك للحصول على خطة (قصيرة / متوسطة / طويلة الأجل)",
+        regimeTitle: "اتجاه الأسواق ومنطق حركة رؤوس الأموال", riskIndex: "مؤشر المخاطر",
+        roleTitle: "اختر صفتك للحصول على خطة الأصول (قصيرة / متوسطة / طويلة الأجل)",
         modalTitle: "لصق استجابة الذكاء الاصطناعي (JSON)", modalDesc: "الصق كود JSON أدناه.",
         cancel: "إلغاء", apply: "تحديث",
-        toastCopied: "تم نسخ أمر التحديث المعاير! الصقه في الذكاء الاصطناعي ثم الصق النتيجة هنا.",
+        toastCopied: "تم نسخ أمر التحديث المطور! الصقه في الذكاء الاصطناعي ثم الصق النتيجة هنا.",
         toastUpdated: "تم تحديث المؤشرات والنتائج بنجاح!",
         toastShared: "تم نسخ التقرير الكامل للواتساب!",
         toastError: "صيغة JSON غير صحيحة.",
@@ -179,10 +181,9 @@
         statusLabels: { green: "آمن", amber: "حذر", red: "خطر" }
       }
     };
-
     var signalsMeta = [
       { id: 's1_dist_days', layer: 0, num: 1, type: 'number', step: '1',
-        en: { name: "S&P 500 Intraday Distribution", unit: "days/10d", rule: "4+ Green-Open/Red-Close days = Institutional selling." },
+        en: { name: "S&P 500 Intraday Distribution", unit: "days/10d", rule: "4+ Green-Open/Red-Close days = Big funds selling into morning rallies." },
         ar: { name: "التصريف المؤسسي اليومي (S&P 500)", unit: "أيام/10", rule: "4 أيام أو أكثر (افتتاح أخضر وإغلاق أحمر) = بيع مؤسسي." },
         sourceName: "TradingView S&P 500", sourceUrl: "https://tradingview.com",
         eval: function(v) { return v >= 4 ? 'red' : (v >= 2 ? 'amber' : 'green'); } },
@@ -192,8 +193,8 @@
         sourceName: "TradingView Gold", sourceUrl: "https://tradingview.com",
         eval: function(v) { return v > 15 ? 'amber' : 'green'; } },
       { id: 's3_us2y_yield', layer: 0, num: 3, type: 'number', step: '0.05',
-        en: { name: "US 2-Year Treasury Yield", unit: "%", rule: "Rates > 4.5% create drag on zero-yield gold/stocks." },
-        ar: { name: "عائد السندات الأمريكية (عامين)", unit: "%", rule: "الفائدة فوق 4.5% تضغط على الذهب والأسهم." },
+        en: { name: "US 2Y Rate (Fed Policy Anchor)", unit: "%", rule: "Tracks near-term Fed path (while 5Y–10Y rates govern mortgages/loans; 10Y >5.3% hits fiscal ceiling). >4.5% pressures gold/stocks." },
+        ar: { name: "عائد السندات لعامين (بوصلة الفائدة)", unit: "%", rule: "يقيس الفائدة القصيرة (بينما تحكم سندات 5-10 سنوات القروض وسقف الدين 5.3%). فوق 4.5% يضغط على الذهب والأسهم." },
         sourceName: "FRED DGS2", sourceUrl: "https://stlouisfed.org",
         eval: function(v) { return v >= 4.75 ? 'red' : (v >= 4.0 ? 'amber' : 'green'); } },
       { id: 's4_tga_trend', layer: 0, num: 4, type: 'select',
@@ -203,24 +204,24 @@
         sourceName: "FRED WTREGEN", sourceUrl: "https://stlouisfed.org",
         eval: function(v) { return v === 'refilling' ? 'amber' : 'green'; } },
       { id: 's5_dxy', layer: 0, num: 5, type: 'number', step: '0.2',
-        en: { name: "US Dollar Index (DXY)", unit: "pts", rule: "DXY > 105 pressures commodities; falling DXY boosts metals." },
-        ar: { name: "مؤشر الدولار (DXY)", unit: "نقطة", rule: "فوق 105 يضغط على السلع؛ تراجعه يدعم المعادن." },
+        en: { name: "US Dollar Index (DXY)", unit: "pts", rule: "DXY > 105 squeezes foreign dollar borrowers; falling DXY boosts metals." },
+        ar: { name: "مؤشر الدولار (DXY)", unit: "نقطة", rule: "فوق 105 يضغط على المقترضين بالدولار؛ تراجعه يدعم المعادن." },
         sourceName: "TradingView DXY", sourceUrl: "https://tradingview.com",
         eval: function(v) { return v >= 106 ? 'red' : (v >= 103 ? 'amber' : 'green'); } },
       { id: 's6_cb_gold_tonnes', layer: 0, num: 6, type: 'number', step: '5',
-        en: { name: "Central Bank Gold (Monthly Rate)", unit: "t/mo", rule: "Benchmark ~60t/mo (Qtr ÷ 3) absorbs rate-driven dips." },
-        ar: { name: "مشتريات البنوك المركزية (شهرياً)", unit: "طن/شهر", rule: "المعيار ~60 طن شهرياً (الربع السنوي ÷ 3) يحمي السعر." },
+        en: { name: "Central Bank Gold (Monthly Rate)", unit: "t/mo", rule: "Benchmark ~60t/mo (Qtr ÷ 3) absorbs paper gold sell-offs." },
+        ar: { name: "مشتريات البنوك المركزية (شهرياً)", unit: "طن/شهر", rule: "المعيار ~60 طن شهرياً (الربع السنوي ÷ 3) يمتص البيع الورقي." },
         sourceName: "World Gold Council", sourceUrl: "https://gold.org",
         eval: function(v) { return v >= 50 ? 'green' : (v >= 25 ? 'amber' : 'red'); } },
       { id: 's7_etf_flow', layer: 0, num: 7, type: 'select',
         options: [{ val: 'inflow', en: 'Inflows', ar: 'تدفقات داخلة' }, { val: 'neutral', en: 'Neutral', ar: 'محايد' }, { val: 'outflow', en: 'Outflows', ar: 'تدفقات خارجة' }],
-        en: { name: "Western Gold ETF Flows", unit: "flow", rule: "Outflows + high CB buying = Accumulation divergence." },
-        ar: { name: "تدفقات صناديق الذهب الغربية", unit: "اتجاه", rule: "خروج الصناديق مع شراء البنوك المركزية = فرصة تجميع." },
+        en: { name: "Western Gold ETF Flows", unit: "flow", rule: "Outflows + high CB buying = Sovereign accumulation divergence." },
+        ar: { name: "تدفقات صناديق الذهب الغربية", unit: "اتجاه", rule: "خروج الصناديق مع شراء البنوك المركزية = تجميع سيادي." },
         sourceName: "WGC ETF Data", sourceUrl: "https://gold.org/gold-etfs-holdings-and-flows",
         eval: function(v) { return v === 'inflow' ? 'green' : 'amber'; } },
       { id: 's8_gsr', layer: 0, num: 8, type: 'number', step: '1',
-        en: { name: "Gold-to-Silver Ratio", unit: "ratio", rule: ">80 favors Gold (defense); <65 favors Silver (growth)." },
-        ar: { name: "نسبة الذهب إلى الفضة", unit: "نسبة", rule: "فوق 80 يفضل الذهب؛ تحت 65 تتفوق الفضة." },
+        en: { name: "Gold-to-Silver Ratio (GSR)", unit: "ratio", rule: ">80 favors Gold (defense); <65 favors Silver. Also watch Gold/Oil >35 (non-USD commodity trade)." },
+        ar: { name: "نسبة الذهب إلى الفضة", unit: "نسبة", rule: "فوق 80 يفضل الذهب؛ تحت 65 تتفوق الفضة (مع مراقبة نسبة الذهب/النفط >35)." },
         sourceName: "Gold/Silver Chart", sourceUrl: "https://tradingview.com",
         eval: function(v) { return v >= 85 ? 'red' : (v >= 75 ? 'amber' : 'green'); } },
       { id: 's9_hy_spread', layer: 1, num: 9, type: 'number', step: '0.1',
@@ -234,13 +235,13 @@
         sourceName: "S&P Global Egypt PMI", sourceUrl: "https://spglobal.com",
         eval: function(v) { return v >= 50.0 ? 'green' : (v >= 48.0 ? 'amber' : 'red'); } },
       { id: 's11_oil_wti', layer: 1, num: 11, type: 'number', step: '1',
-        en: { name: "WTI Oil & Freight Chokepoints", unit: "$/bbl", rule: "Spikes >$95 signal sticky inflation 60-90 days ahead." },
-        ar: { name: "نفط WTI وممرات الشحن", unit: "$/برميل", rule: "فوق 95$ ينذر بتضخم عنيد خلال 60-90 يوماً." },
+        en: { name: "WTI Oil & Freight Chokepoints", unit: "$/bbl", rule: "Spikes >$95 strain USD importers & signal sticky inflation 60-90d ahead." },
+        ar: { name: "نفط WTI وممرات الشحن", unit: "$/برميل", rule: "فوق 95$ يضغط على مستوردي النفط وينذر بتضخم عنيد." },
         sourceName: "IMF PortWatch / EIA", sourceUrl: "https://imf.org",
         eval: function(v) { return v >= 95 ? 'red' : (v >= 82 ? 'amber' : 'green'); } },
       { id: 's12_capex_trend', layer: 1, num: 12, type: 'select',
         options: [{ val: 'rising', en: 'Rising (AI/Infra)', ar: 'صاعد (بنية وتقنية)' }, { val: 'flat', en: 'Flat', ar: 'مستقر' }, { val: 'falling', en: 'Falling', ar: 'هابط' }],
-                en: { name: "Hyperscaler Capex & Mobility", unit: "trend", rule: "Rising AI/grid capex & tourism confirm real growth." },
+        en: { name: "Hyperscaler Capex & Mobility", unit: "trend", rule: "Rising AI/grid capex & tourism confirm real growth." },
         ar: { name: "الإنفاق الرأسمالي والسياحة", unit: "اتجاه", rule: "نمو الإنفاق على البنية والسياحة يؤكد استمرار النمو." },
         sourceName: "TSMC / SEC 10-Q", sourceUrl: "https://tsmc.com",
         eval: function(v) { return v === 'falling' ? 'red' : (v === 'flat' ? 'amber' : 'green'); } },
@@ -273,57 +274,58 @@
         sourceName: "MoF / Central Banks", sourceUrl: "https://mof.gov.eg",
         eval: function(v) { return v === 'tax_deadline' ? 'red' : (v === 'intervention' ? 'amber' : 'green'); } }
     ];
+
     var playbooks = {
       household: {
         en: [
-          { horizon: "SHORT-TERM (0–3 MOS)", title: "90-Day Liquidity Shield", desc: "Keep 3–6 months of living expenses in high-yield local T-bills or savings where real yields are positive; pay off variable debt immediately." },
-          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Disciplined Value-Gap DCA", desc: "Ignore dinner-table hype. Automate calm monthly purchases into gold or broad index funds specifically when prices dip below the 200-DMA." },
-          { horizon: "LONG-TERM (1–5 YRS)", title: "Purchasing-Power & Bank Shield", desc: "Hold 10%–20% in sovereign-backed physical gold and split liquidity across two separate banks to protect against currency erosion." }
+          { horizon: "SHORT-TERM (0–3 MOS)", title: "Protect Family Cash & Kill Debt", desc: "Keep 3–6 months of living expenses in high-yield T-bills or savings certificates (never hoard idle EGP or USD cash earning 0%). Split access across two bank accounts so app outages or card limits never block you, and pay off variable debt immediately." },
+          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Smart Buying & Asset Traps", desc: "Never buy gold, silver, or stocks during hype rallies, and never buy a car as an 'investment' (cars depreciate and drain maintenance cash). Invest a small fixed monthly sum into physical gold or profitable dividend stocks only when prices cool down." },
+          { horizon: "LONG-TERM (1–5 YRS)", title: "Real Estate, Land & Gold Shield", desc: "Balance long-term savings between physical gold (10%–20%) and ready-to-deliver, rent-producing apartments or serviced land with fixed installments you easily afford (avoid stretched off-plan projects or variable mortgages)." }
         ],
         ar: [
-          { horizon: "المدى القصير (0–3 أشهر)", title: "درع السيولة لـ 90 يوماً", desc: "احتفظ بمصاريف 3–6 أشهر في أذون خزانة عالية العائد أو حسابات ادخار ذات عائد حقيقي موجب، وسدد الديون المتغيرة فوراً." },
-          { horizon: "المدى المتوسط (3–12 شهراً)", title: "الشراء الدوري عند التراجع", desc: "تجاهل هوس المجالس. نفّذ الشراء الشهري الهادئ في الذهب أو الصناديق تحديداً عند الهبوط دون متوسط 200 يوم." },
-          { horizon: "المدى الطويل (1–5 سنوات)", title: "حماية الثروة وتعدد البنوك", desc: "احتفظ بنسبة 10%–20% في الذهب المادي المدعوم من البنوك المركزية ووزع سيولتك بين بنكين للتحوط من تآكل العملة." }
+          { horizon: "المدى القصير (0–3 شهور)", title: "أمان البيت والسيولة والتخلص من الديون", desc: "احمِ مصاريف بيتك لـ 3–6 شهور في أذون خزانة أو شهادات بعائد مرتفع (تجنب تجميد الكاش بلا عائد سواء بالجنيه أو الدولار). وزّع سيولتك بين حسابين بنكيين لتفادي أعطال التطبيقات أو حدود السحب، وسدّد أي ديون متغيرة فوراً." },
+          { horizon: "المدى المتوسط (3–12 شهراً)", title: "الشراء الذكي وتجنب فخاخ السيارات والفضة", desc: "لا تشترِ ذهباً أو فضة أو أسهماً وقت الضجيج، ولا تشترِ سيارة بغرض الاستثمار (السيارات أصل مستهلك ومكلف الصيانة). خصص مبلغاً شهرياً للشراء الهادئ في الذهب أو أسهم الشركات الرابحة فقط عند تراجع الأسعار." },
+          { horizon: "المدى الطويل (1–5 سنوات)", title: "العقار الجاهز والأرض والذهب", desc: "وزّع مدخراتك طويلة الأجل بين الذهب المادي (10%–20%) لحفظ القوة الشرائية، وعقار جاهز مدرّ للإيجار أو أرض مرفّقة بأقساط ثابتة تناسب دخلك (تجنب العقار تحت الإنشاء بأقساط ضاغطة أو فائدة متغيرة)." }
         ]
       },
       business: {
         en: [
-          { horizon: "SHORT-TERM (0–3 MOS)", title: "Protect Cash & Fix Debt", desc: "With Egypt PMI below 50 and rates elevated, freeze variable-rate borrowing, tighten receivables, and keep payroll cash liquid." },
-          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Freight Lull Inventory & Micro-Pricing", desc: "Lock freight contracts during shipping dips (Signal #11) and pass input inflation to customers in small, frequent steps." },
-          { horizon: "LONG-TERM (1–5 YRS)", title: "ROI-Verified Tech & Export Focus", desc: "Only fund AI/software that cuts unit costs (Signal #15), and pivot B2B capacity toward export manufacturing, tourism, and energy." }
+          { horizon: "SHORT-TERM (0–3 MOS)", title: "Cash Flow, Receivables & FX Matching", desc: "With Egypt PMI below 50 and rates elevated, freeze variable-rate borrowing, tighten customer credit terms, and hold USD/FX only to match confirmed import invoices rather than currency speculation." },
+          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Productive Goods & Freight Lulls", desc: "Stock fast-moving, non-perishable raw materials during freight rate dips (Signal #11), and pass rising input costs to customers in small, frequent price adjustments." },
+          { horizon: "LONG-TERM (1–5 YRS)", title: "ROI-Verified Tech & Real Production", desc: "Invest in local manufacturing, export services, or AI/automation tools that demonstrably cut unit labor/energy costs (Signal #15)—avoid unmonetized tech overhead." }
         ],
         ar: [
-          { horizon: "المدى القصير (0–3 أشهر)", title: "حماية الكاش وتثبيت الديون", desc: "مع تراجع مؤشر PMI دون 50 وارتفاع الفائدة، أوقف الاقتراض متغير الفائدة وسرّع التحصيل لحماية سيولة التشغيل." },
-          { horizon: "المدى المتوسط (3–12 شهراً)", title: "تأمين المخزون والتسعير التدريجي", desc: "ثبّت عقود الشحن عند هدوء النولون (مؤشر 11) ومرر زيادات التكلفة على دفعات صغيرة متكررة لحماية هوامشك." },
-          { horizon: "المدى الطويل (1–5 سنوات)", title: "التقنية المربحة والتصدير", desc: "استثمر فقط في الأدوات التي تخفض التكلفة فعلياً (مؤشر 15)، ووجّه نشاطك نحو التصدير، السياحة، والطاقة." }
+          { horizon: "المدى القصير (0–3 شهور)", title: "حماية السيولة ومطابقة العملة", desc: "مع تراجع مؤشر PMI دون 50 وارتفاع الفائدة، أوقف الاقتراض متغير الفائدة، سرّع تحصيل مستحقاتك، واحتفظ بالدولار فقط لتغطية فواتير الاستيراد الفعلية وليس للمضاربة." },
+          { horizon: "المدى المتوسط (3–12 شهراً)", title: "تخزين البضائع الأساسية والتسعير التدريجي", desc: "خزّن الخامات والبضائع سريعة الدوران وغير القابلة للتلف عند هدوء أسعار الشحن (مؤشر 11)، ومرر زيادات التكلفة على دفعات صغيرة متكررة." },
+          { horizon: "المدى الطويل (1–5 سنوات)", title: "الإنتاج الحقيقي والتقنية المربحة", desc: "استثمر في التصنيع المحلي، التصدير، أو أدوات الذكاء الاصطناعي والأتمتة التي تخفض تكلفة الوحدة فعلياً (مؤشر 15) وتجنب المصاريف التقنية غير المربحة." }
         ]
       },
       investor: {
         en: [
-          { horizon: "SHORT-TERM (0–3 MOS)", title: "Zero Margin & Credit Filter", desc: "FINRA margin debt is at record highs—avoid leverage completely. Use Credit Spreads (<4%) to avoid panic-selling healthy dips." },
-          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Gold Defense Before Silver Rotation", desc: "Hold Gold while central banks buy ~107t/mo and GSR stays >85. Rotate into higher-beta Silver only after 2Y yields peak." },
-          { horizon: "LONG-TERM (1–5 YRS)", title: "Own Physical Capex Bottlenecks", desc: "Follow verified hyperscaler capex into power utilities, electrical grids, semiconductors, copper, and natural gas infrastructure." }
+          { horizon: "SHORT-TERM (0–3 MOS)", title: "Zero Margin & Cash-Squeeze Discipline", desc: "FINRA margin debt is at record highs ($1.48T)—use zero borrowed money. When leveraged AI/tech funds sell winners for cash, do not panic-sell quality shares as long as Credit Spreads (#9) stay <4%." },
+          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Gold First, Silver Only After Rate Peak", desc: "Hold Gold while central banks buy ~107t/mo into paper dips. Avoid chasing Silver while GSR (#8) >85; rotate into Silver only when 2Y yields (#3) peak and turn downward." },
+          { horizon: "LONG-TERM (1–5 YRS)", title: "Profitable Infrastructure & Cash-Flowing Equities", desc: "Accumulate profitable companies with real pricing power—power utilities, electrical grids, energy, semiconductors, and export leaders—while avoiding cash-burning hype stocks (#13/#15)." }
         ],
         ar: [
-          { horizon: "المدى القصير (0–3 أشهر)", title: "صفر رافعة مالية وفلتر الائتمان", desc: "ديون الهامش في مستويات قياسية—تجنب الشراء بالهامش تماماً، واعتمد على هدوء هوامش الائتمان (<4%) لعدم البيع بذعر." },
-          { horizon: "المدى المتوسط (3–12 شهراً)", title: "الذهب أولاً قبل التحول للفضة", desc: "احتفظ بالذهب بدعم البنوك المركزية (~107 طن/شهر) ونسبة الذهب/الفضة فوق 85، وانتقل للفضة فقط عند ذروة الفائدة." },
-          { horizon: "المدى الطويل (1–5 سنوات)", title: "تملّك البنية التحتية للإنفاق", desc: "اتبع الإنفاق الرأسمالي الحقيقي نحو شركات الكهرباء والشبكات، أشباه الموصلات، النحاس، والغاز الطبيعي." }
+          { horizon: "المدى القصير (0–3 شهور)", title: "صفر شراء بالهامش وفهم ضغط السيولة", desc: "ديون الهامش في مستويات قياسية—تجنب الاقتراض تماماً. عندما تبيع صناديق التكنولوجيا أسهمها لتوفير كاش، لا تبع أسهمك القوية بذعر طالما هوامش الائتمان (#9) تحت 4%." },
+          { horizon: "المدى المتوسط (3–12 شهراً)", title: "الذهب أولاً والفضة بعد ذروة الفائدة", desc: "احتفظ بالذهب مدعوماً بشراء البنوك المركزية (~107 طن/شهر). تجنب مطاردة الفضة طالما النسبة (#8) فوق 85، وانتقل إليها فقط عند ذروة الفائدة (#3)." },
+          { horizon: "المدى الطويل (1–5 سنوات)", title: "أسهم البنية التحتية والشركات الرابحة", desc: "ركّز على الشركات الرابحة ذات القدرة التسعيرية: الكهرباء، الشبكات، الطاقة، أشباه الموصلات، والشركات التصديرية—وتجنب الأسهم الخاسرة ذات الضجيج العالي." }
         ]
       },
       executive: {
         en: [
           { horizon: "SHORT-TERM (0–3 MOS)", title: "Cut Unmonetized Hype Budgets", desc: "Audit departmental spending under Signal #15—reallocate budgets away from experimental projects toward immediate revenue/cost ROI." },
-          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Negotiate Margin-Linked Compensation", desc: "In sticky inflation, tie performance bonuses to net margin protection and diversify personal cash into high-yield bills." },
+          { horizon: "MEDIUM-TERM (3–12 MOS)", title: "Margin-Linked Pay & Liquid Reserves", desc: "Tie performance bonuses to net margin protection and keep personal liquid reserves in high-yield bills rather than depreciating idle cash." },
           { horizon: "LONG-TERM (1–5 YRS)", title: "Lead Capital Bottleneck Divisions", desc: "Position your career inside AI deployment, energy/grid modernization, supply-chain logistics, or cross-border fintech compliance." }
         ],
         ar: [
-          { horizon: "المدى القصير (0–3 أشهر)", title: "تقليص ميزانيات المشاريع غير المربحة", desc: "راجع الإنفاق وفق مؤشر 15—انقل الميزانيات من التجارب غير المربحة إلى المبادرات ذات العائد المباشر." },
-          { horizon: "المدى المتوسط (3–12 شهراً)", title: "ربط الحوافز بهوامش الربح", desc: "في ظل التضخم العنيد، اربط مكافآتك بحماية صافي الربح ونوّع مدخراتك الشخصية في أدوات العائد المرتفع." },
+          { horizon: "المدى القصير (0–3 شهور)", title: "تقليص ميزانيات المشاريع غير المربحة", desc: "راجع الإنفاق وفق مؤشر 15—انقل الميزانيات من التجارب غير المربحة إلى المبادرات ذات العائد المباشر." },
+          { horizon: "المدى المتوسط (3–12 شهراً)", title: "ربط الحوافز بهوامش الربح", desc: "اربط مكافآتك بحماية صافي الربح واحتفظ بمدخراتك الشخصية في أدوات العائد المرتفع بدلاً من الكاش المجمد." },
           { horizon: "المدى الطويل (1–5 سنوات)", title: "قيادة قطاعات الاختناق الرأسمالي", desc: "وجّه مسارك المهني نحو تطبيقات الذكاء الاصطناعي، تحديث شبكات الطاقة، اللوجستيات، والامتثال المالي الرقمي." }
         ]
       }
     };
-        function evaluateDashboard() {
+    function evaluateDashboard() {
       var redCount = 0, amberCount = 0, evals = {};
       for (var i = 0; i < signalsMeta.length; i++) {
         var s = signalsMeta[i], st = s.eval(state[s.id]);
@@ -343,35 +345,41 @@
       else if (riskScore >= 35) { scoreCircle.style.borderColor = '#f59e0b'; scoreLabel.textContent = currentLang === 'en' ? 'SELECTIVE / FLIP RISK' : 'انتقائي / خطر تقلبات'; }
       else { scoreCircle.style.borderColor = '#10b981'; scoreLabel.textContent = currentLang === 'en' ? 'EXPANSION / CONTAINED' : 'توسع / مخاطر منخفضة'; }
 
-      var headlineEl = document.getElementById('regime-headline'), whyEl = document.getElementById('regime-why'), pillsEl = document.getElementById('gate-pills');
+      var headlineEl = document.getElementById('regime-headline'), plainEl = document.getElementById('regime-plain'), proEl = document.getElementById('regime-pro'), pillsEl = document.getElementById('gate-pills');
       if (currentLang === 'en') {
         if (evals.s9_hy_spread === 'red') {
-          headlineEl.textContent = "REGIME: Credit Crunch — Maximum Capital Preservation";
-          whyEl.innerHTML = "<strong>Why & Flip Warning:</strong> Corporate credit spreads are blowing out alongside slowing activity. Liquidate leverage immediately and hold short-term T-bills until credit stabilizes.";
+          headlineEl.textContent = "Direction: Credit Squeeze — Protect Cash & Avoid Debt";
+          plainEl.innerHTML = "<strong>For Everyone:</strong> Borrowing costs and business debt stress are rising. Keep family savings in safe, high-yield accounts and avoid new loans or risky assets.";
+          proEl.innerHTML = "<strong>Institutional Logic:</strong> Corporate credit spreads (" + state.s9_hy_spread + "%) are widening alongside slowing PMI. De-leverage immediately and hold short-duration T-bills.";
         } else if (gate2Bubble) {
-          headlineEl.textContent = "REGIME: Resilient Economy + High Leverage/Volatility Flip Risk";
-          whyEl.innerHTML = "<strong>Why & Flip Warning:</strong> Tight credit spreads (" + state.s9_hy_spread + "%) & rising AI capex confirm no 2008 crash, BUT high yields (" + state.s3_us2y_yield + "%) and record margin leverage mean sharp, sudden market flips are likely. Avoid debt/FOMO; accumulate quality on dips.";
+          headlineEl.textContent = "Direction: Economy Growing, But Expect Sharp Cash-Squeeze Swings";
+          plainEl.innerHTML = "<strong>For Everyone:</strong> The global economy is not crashing, so do not panic. However, prices will jump and drop sharply—keep emergency cash earning interest, avoid debt, and buy gold or ready property only calmly without rushing.";
+          proEl.innerHTML = "<strong>Institutional Logic:</strong> Tight credit spreads (" + state.s9_hy_spread + "%) & AI capex rule out a 2008 collapse, BUT high yields (" + state.s3_us2y_yield + "%) and oil ($" + state.s11_oil_wti + ") squeeze foreign dollar borrowers (~$13–14T debt) and leveraged tech funds—forcing them to sell stocks, bonds, and paper gold for cash while central banks (" + state.s6_cb_gold_tonnes + "t/mo) buy physical dips ahead of fiscal debt limits (5.3%–5.5% 10Y ceiling).";
         } else {
-          headlineEl.textContent = "REGIME: 'No-Landing' Growth + Sticky Rate Cross-Currents";
-          whyEl.innerHTML = "<strong>Why & Flip Warning:</strong> Real growth and central bank gold buying (" + state.s6_cb_gold_tonnes + "t/mo) remain strong, while elevated rates create short-term noise. Stick to scheduled time-horizon plans.";
+          headlineEl.textContent = "Direction: Steady Growth + High Interest Rates";
+          plainEl.innerHTML = "<strong>For Everyone:</strong> Business activity is healthy while interest rates remain high. Put idle cash into high-yield savings/T-bills and build long-term gold or ready real estate steadily.";
+          proEl.innerHTML = "<strong>Institutional Logic:</strong> Calm credit spreads (" + state.s9_hy_spread + "%) and central bank gold buying (" + state.s6_cb_gold_tonnes + "t/mo) support hard assets, while U.S. fiscal interest/entitlement pressure (>100% of receipts) caps how high long-term yields can stay before liquidity returns.";
         }
-        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">Gate 1 Credit/Growth: ' + (gate1Healthy ? 'No Crash' : 'Slowing') + '</span>' +
-          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">Gate 2 Leverage/Bubble: ' + (gate2Bubble ? 'High Flip Risk' : 'Contained') + '</span>' +
-          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">Gate 3 Gold Floor: ' + (gate3GoldFloor ? 'Strong' : 'Weak') + '</span>';
+        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">Credit & Economy: ' + (gate1Healthy ? 'No Crash' : 'Tight') + '</span>' +
+          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">Leverage & Swings: ' + (gate2Bubble ? 'High Volatility' : 'Calm') + '</span>' +
+          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">Central Bank Gold: ' + (gate3GoldFloor ? 'Strong Floor' : 'Weak') + '</span>';
       } else {
         if (evals.s9_hy_spread === 'red') {
-          headlineEl.textContent = "التشخيص: أزمة ائتمان — حماية رأس المال";
-          whyEl.innerHTML = "<strong>السبب وتحذير التقلبات:</strong> اتساع هوامش الائتمان مع تباطؤ النشاط. تخلص من الرافعة المالية فوراً واحتفظ بأذون الخزانة والسيولة.";
+          headlineEl.textContent = "الاتجاه: ضغط ائتماني — احمِ الكاش وتجنب الديون";
+          plainEl.innerHTML = "<strong>للجميع ببساطة:</strong> تكلفة الاقتراض وضغوط الشركات مرتفعة. احتفظ بمدخرات أسرتك في أوعية ادخارية آمنة وعالية العائد وتجنب أي قروض أو مخاطرة.";
+          proEl.innerHTML = "<strong>المنطق المؤسسي:</strong> اتساع هوامش ائتمان الشركات (" + state.s9_hy_spread + "%) مع تباطؤ النشاط يتطلب تصفية الرافعة المالية والتركيز على أذون الخزانة قصيرة الأجل.";
         } else if (gate2Bubble) {
-          headlineEl.textContent = "التشخيص: اقتصاد متماسك مع خطر تقلبات حادة ورافعة مالية";
-          whyEl.innerHTML = "<strong>السبب وتحذير التقلبات:</strong> هدوء الائتمان (" + state.s9_hy_spread + "%) والإنفاق الرأسمالي ينفيان حدوث انهيار شامل، لكن الفائدة المرتفعة (" + state.s3_us2y_yield + "%) وديون الهامش القياسية تعني تقلبات مفاجئة. تجنب الديون والهوس واجمع الأصول عند الهبوط.";
+          headlineEl.textContent = "الاتجاه: الاقتصاد مستمر لكن ضغط السيولة يسبب تقلبات حادة";
+          plainEl.innerHTML = "<strong>للجميع ببساطة:</strong> لا يوجد انهيار اقتصادي شامل فلا داعي للذعر، لكن الأسعار ستشهد صعوداً وهبوطاً مفاجئاً. استثمر الكاش في أوعية ذات عائد مرتفع، ابتعد عن الديون، واشترِ الذهب أو العقار الجاهز بهدوء دون اندفاع.";
+          proEl.innerHTML = "<strong>المنطق المؤسسي:</strong> هدوء الائتمان (" + state.s9_hy_spread + "%) والإنفاق الرأسمالي ينفيان أزمة 2008، لكن الفائدة (" + state.s3_us2y_yield + "%) والنفط ($" + state.s11_oil_wti + ") يضغطان على المقترضين بالدولار عالمياً (~13-14 تريليون$) وصناديق التكنولوجيا، مما يجبرهم على بيع الأسهم والسندات والذهب الورقي لتوفير السيولة، بينما تشتري البنوك المركزية (" + state.s6_cb_gold_tonnes + " طن/شهر) الهبوط تحسباً لسقف الفائدة المالي (5.3%-5.5%).";
         } else {
-          headlineEl.textContent = "التشخيص: نمو مستمر ('لا هبوط') مع فائدة مرتفعة";
-          whyEl.innerHTML = "<strong>السبب وتحذير التقلبات:</strong> النمو الحقيقي وشراء البنوك المركزية للذهب (" + state.s6_cb_gold_tonnes + " طن/شهر) يدعمان السوق، بينما الفائدة تخلق تذبذباً مؤقتاً. التزم بخطتك الزمنية.";
+          headlineEl.textContent = "الاتجاه: نمو اقتصادي متماسك مع فائدة مرتفعة";
+          plainEl.innerHTML = "<strong>للجميع ببساطة:</strong> النشاط الاقتصادي متماسك والفائدة مرتفعة. شغّل أموالك السائلة في أوعية عالية العائد وابنِ مدخراتك في الذهب أو العقار الجاهز تدريجياً.";
+          proEl.innerHTML = "<strong>المنطق المؤسسي:</strong> هدوء الائتمان (" + state.s9_hy_spread + "%) ومشتريات البنوك المركزية للذهب (" + state.s6_cb_gold_tonnes + " طن/شهر) يدعمان الأصول الصلبة، بينما تتجاوز التزامات الفائدة والاستحقاقات الأمريكية 100% من الإيرادات مما يحد من استمرار الفائدة المرتفعة.";
         }
-        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">بوابة 1 الائتمان والنمو: ' + (gate1Healthy ? 'لا انهيار' : 'تباطؤ') + '</span>' +
-          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">بوابة 2 الرافعة والفقاعات: ' + (gate2Bubble ? 'خطر تقلب عالٍ' : 'مسيطر عليها') + '</span>' +
-          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">بوابة 3 أرضية الذهب: ' + (gate3GoldFloor ? 'قوية' : 'ضعيفة') + '</span>';
+        pillsEl.innerHTML = '<span class="pill ' + (gate1Healthy ? 'green' : 'amber') + '">الائتمان والاقتصاد: ' + (gate1Healthy ? 'لا انهيار' : 'ضغط تكاليف') + '</span>' +
+          '<span class="pill ' + (gate2Bubble ? 'red' : 'green') + '">الديون والتقلبات: ' + (gate2Bubble ? 'تذبذب حاد' : 'مستقر') + '</span>' +
+          '<span class="pill ' + (gate3GoldFloor ? 'green' : 'amber') + '">شراء البنوك للذهب: ' + (gate3GoldFloor ? 'دعم قوي' : 'ضعيف') + '</span>';
       }
       return evals;
     }
@@ -443,18 +451,18 @@
       var title = document.getElementById('regime-headline').textContent;
       var score = document.getElementById('score-num').textContent;
       var label = document.getElementById('score-label').textContent;
-      var whyText = document.getElementById('regime-why').textContent;
+      var plainText = document.getElementById('regime-plain').textContent;
       var url = window.location.href;
       var summary = currentLang === 'en'
-        ? "📊 *17-Signal Macro Command Center* (" + state.as_of_date + ")\n• *Risk Score:* " + score + "/100 (" + label + ")\n• *Diagnosis:* " + title + "\n• *" + whyText + "\n\n🔗 Interactive Tool: " + url
-        : "📊 *مركز القيادة الاقتصادي (17 مؤشراً)* (" + state.as_of_date + ")\n• *مؤشر المخاطر:* " + score + "/100 (" + label + ")\n• *" + title + "\n• *" + whyText + "\n\n🔗 الأداة التفاعلية: " + url;
+        ? "🧭 *Market & Capital Compass* (" + state.as_of_date + ")\n• *Risk Score:* " + score + "/100 (" + label + ")\n• *" + title + "*\n• " + plainText + "\n\n🔗 Interactive Tool: " + url
+        : "🧭 *بوصلة الأسواق ورأس المال* (" + state.as_of_date + ")\n• *مؤشر المخاطر:* " + score + "/100 (" + label + ")\n• *" + title + "*\n• " + plainText + "\n\n🔗 الأداة التفاعلية: " + url;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(summary).then(function() { showToast(i18n[currentLang].toastShared); });
       } else { openJsonModal(); document.getElementById('json-input').value = summary; }
     }
 
     function copyUpdatePrompt() {
-      var promptText = 'Search live financial sources for today\'s latest verified figures and include today\'s date in "as_of_date". Follow these exact calibration rules so there are zero unit errors and minimal nulls: (1) Divide quarterly WGC central bank gold tonnage by 3 for s6_cb_gold_tonnes monthly rate; (2) Use S&P 500 for s1_dist_days (count of last 10 sessions where Open > Prev Close and Close < Open); (3) Use Nasdaq 100 P/E divided by S&P 500 P/E for s13_sector_pe_mult; (4) Map FINRA margin debt >$1.3T to "record", $0.9T-$1.3T to "moderate", <$0.9T to "low"; (5) Use EGX retail volume % (or US order flow %) for s16_retail_share. Set truly unverifiable fields to null. Return ONLY a single valid JSON object with these exact keys: {"as_of_date": "Nov 22, 2026", "s1_dist_days": 3, "s2_gold_200dma_gap": 4.2, "s3_us2y_yield": 4.76, "s4_tga_trend": "draining", "s5_dxy": 102.29, "s6_cb_gold_tonnes": 107.1, "s7_etf_flow": "inflow", "s8_gsr": 85.5, "s9_hy_spread": 3.52, "s10_egypt_pmi": 47.2, "s11_oil_wti": 83.5, "s12_capex_trend": "rising", "s13_sector_pe_mult": 1.45, "s14_margin_debt": "record", "s15_monetization": "positive", "s16_retail_share": 65, "s17_policy_shock": "none"}';
+      var promptText = 'Search live financial sources for today\'s latest verified figures and include today\'s date in "as_of_date". Follow these exact calibration rules so there are zero unit errors and minimal nulls: (1) Divide quarterly WGC central bank gold tonnage by 3 for s6_cb_gold_tonnes monthly rate; (2) Use S&P 500 for s1_dist_days (count of last 10 sessions where Open > Prev Close and Close < Open); (3) Use Nasdaq 100 P/E divided by S&P 500 P/E for s13_sector_pe_mult; (4) Map FINRA margin debt >$1.3T to "record", $0.9T-$1.3T to "moderate", <$0.9T to "low"; (5) Use EGX retail volume % (or US order flow %) for s16_retail_share. Set truly unverifiable fields to null. Return ONLY a single valid JSON object with these exact keys: {"as_of_date": "Nov 23, 2026", "s1_dist_days": 3, "s2_gold_200dma_gap": 4.2, "s3_us2y_yield": 4.76, "s4_tga_trend": "draining", "s5_dxy": 102.29, "s6_cb_gold_tonnes": 107.1, "s7_etf_flow": "inflow", "s8_gsr": 85.5, "s9_hy_spread": 3.52, "s10_egypt_pmi": 47.2, "s11_oil_wti": 83.5, "s12_capex_trend": "rising", "s13_sector_pe_mult": 1.45, "s14_margin_debt": "record", "s15_monetization": "positive", "s16_retail_share": 65, "s17_policy_shock": "none"}';
       if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(promptText).then(function() { showToast(i18n[currentLang].toastCopied); }); }
       else { openJsonModal(); document.getElementById('json-input').value = promptText; }
     }
